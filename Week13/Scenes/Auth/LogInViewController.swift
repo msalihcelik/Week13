@@ -11,10 +11,6 @@ import MobilliumBuilders
 
 class LogInViewController: UIViewController {
     
-    private var username: String = ""
-    private var password: String = ""
-    private var email: String = ""
-    
     private let scrollView = UIScrollViewBuilder()
         .bounces(true)
         .build()
@@ -50,16 +46,21 @@ class LogInViewController: UIViewController {
         super.viewDidLoad()
         configureContents()
         addSubViews()
-        getData()
+        //        getData()
+        addActions()
     }
 }
 
+//MARK: - Contents
 extension LogInViewController {
     
     private func configureContents() {
         view.backgroundColor = .white
-        logInButton.addTarget(self, action: #selector(logIn), for: .touchUpInside)
     }
+}
+
+//MARK: - SubViews
+extension LogInViewController {
     
     private func addSubViews() {
         addScrollView()
@@ -69,7 +70,7 @@ extension LogInViewController {
     
     private func addScrollView() {
         view.addSubview(scrollView)
-        scrollView.edgesToSuperview(excluding: .bottom, usingSafeArea: true)
+        scrollView.edgesToSuperview(usingSafeArea: true)
         
         scrollView.addSubview(contentView)
         contentView.edgesToSuperview()
@@ -86,32 +87,45 @@ extension LogInViewController {
     
     private func addLogInButton() {
         self.view.addSubview(logInButton)
-        logInButton.topToBottom(of: scrollView).constant = 20
         logInButton.edgesToSuperview(excluding: .top, insets: .init(top: 0, left: 20, bottom: 20, right: 20), usingSafeArea: true)
     }
+}
+
+//MARK: - Actions
+extension LogInViewController {
     
-    private func getData() {
-        guard let username = UserDefaultsManager.shared.getData(key: KeyIdentifier.username) as? String,
-              let email = UserDefaultsManager.shared.getData(key: KeyIdentifier.email) as? String,
-              let password = UserDefaultsManager.shared.getData(key: KeyIdentifier.password) as? String
-        else { return }
-        self.username = username
-        self.email = email
-        self.password = password
+    private func addActions() {
+        logInButton.addTarget(self, action: #selector(logInButtonTapped), for: .touchUpInside)
     }
     
     @objc
-    func logIn() {
-        guard usernameTextField.text == username,
-              passwordTextField.text == password,
-              emailTextField.text == email else {
-                  return AlertViewGenerate(viewController: self,
-                                           title: AlertIdentifier.error,
-                                           message: AlertIdentifier.wrongData).generate()
-              }
-        let homePage = HomePageViewController()
-        homePage.modalPresentationStyle = .fullScreen
-        present(homePage, animated: true, completion: nil)
+    func logInButtonTapped() {
+        // Read/Get Data
+        guard let data = UserDefaults.standard.data(forKey: "user") else { return }
+        
+        do {
+            // Create JSON Decoder
+            let decoder = JSONDecoder()
+            
+            // Decode Note
+            let data = try decoder.decode(User.self, from: data)
+            
+            guard usernameTextField.text == data.username,
+                  emailTextField.text == data.email,
+                  passwordTextField.text == data.password
+            else {
+                return AlertViewGenerate.shared
+                    .setViewController(self)
+                    .setTitle(AlertIdentifier.error)
+                    .setMessage(AlertIdentifier.wrongData)
+                    .generate()
+            }
+            // Segue
+            let homePage = HomePageViewController()
+            homePage.modalPresentationStyle = .fullScreen
+            present(homePage, animated: true, completion: nil)
+        } catch {
+            print("Unable to Decode Notes (\(error))")
+        }
     }
-    
 }

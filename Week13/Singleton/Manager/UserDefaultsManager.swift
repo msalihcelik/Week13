@@ -7,7 +7,7 @@
 
 import Foundation
 
-class UserDefaultsManager {
+class UserDefaultsManager: Codable {
     
     static let shared = UserDefaultsManager()
     

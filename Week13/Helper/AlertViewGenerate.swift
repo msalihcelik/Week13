@@ -8,16 +8,27 @@
 import Foundation
 import UIKit
 
-class AlertViewGenerate {
+final class AlertViewGenerate {
     
-    let viewController: UIViewController
-    let message: String
-    let title: String
+    private var viewController: UIViewController = UIViewController()
+    private var message: String = ""
+    private var title: String = ""
     
-    init(viewController: UIViewController, title: String, message: String) {
+    static let shared = AlertViewGenerate()
+    
+    func setViewController(_ viewController: UIViewController) -> AlertViewGenerate {
         self.viewController = viewController
-        self.message = message
+        return self
+    }
+    
+    func setTitle(_ title: String) -> AlertViewGenerate {
         self.title = title
+        return self
+    }
+    
+    func setMessage(_ message: String) -> AlertViewGenerate {
+        self.message = message
+        return self
     }
     
     func generate() {

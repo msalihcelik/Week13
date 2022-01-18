@@ -60,16 +60,20 @@ class RegisterViewController: UIViewController {
         super.viewDidLoad()
         configureContents()
         addSubViews()
+        addActions()
     }
 }
 
+//MARK: - Contents
 extension RegisterViewController {
     
     private func configureContents() {
         view.backgroundColor = .white
-        logInButton.addTarget(self, action: #selector(segueLogIn), for: .touchUpInside)
-        registerButton.addTarget(self, action: #selector(registerButtonTapped), for: .touchUpInside)
     }
+}
+
+//MARK: - SubViews
+extension RegisterViewController {
     
     private func addSubViews() {
         addScrollView()
@@ -96,9 +100,18 @@ extension RegisterViewController {
         contentStackView.addArrangedSubview(registerButton)
         contentStackView.addArrangedSubview(logInButton)
     }
+}
+
+//MARK: - Actions
+extension RegisterViewController {
+    
+    private func addActions() {
+        logInButton.addTarget(self, action: #selector(logInButtonTapped), for: .touchUpInside)
+        registerButton.addTarget(self, action: #selector(registerButtonTapped), for: .touchUpInside)
+    }
     
     @objc
-    func segueLogIn() {
+    func logInButtonTapped() {
         let nextViewController = LogInViewController()
         nextViewController.modalPresentationStyle = .fullScreen
         self.present(nextViewController, animated: true, completion: nil)
@@ -106,35 +119,46 @@ extension RegisterViewController {
     
     @objc
     func registerButtonTapped() {
-        guard let name = nameTextField.text,
-              let surname = surnameTextField.text,
-              let email = emailTextField.text,
-              let username = usernameTextField.text,
-              let password = passwordTextField.text
-        else { return }
+        guard let name = nameTextField.text, name.isEmpty != true,
+              let surname = surnameTextField.text, surname.isEmpty != true,
+              let email = emailTextField.text, email.isEmpty != true,
+              let username = usernameTextField.text, username.isEmpty != true,
+              let password = passwordTextField.text, password.isEmpty != true
+        else {
+            return AlertViewGenerate.shared
+                .setViewController(self)
+                .setTitle(AlertIdentifier.error)
+                .setMessage(AlertIdentifier.missingData)
+                .generate()
+        }
         
-        if (name.isEmpty || surname.isEmpty || email.isEmpty || username.isEmpty || password.isEmpty) {
-            AlertViewGenerate(viewController: self,
-                              title: AlertIdentifier.error,
-                              message: AlertIdentifier.missingData).generate()
-        } else {
-            let user = UserBuilder()
-                .setName(name)
-                .setSurname(surname)
-                .setEmail(email)
-                .setUserName(username)
-                .setPassword(password)
-                .build()
-            UserDefaultsManager.shared.setData(value: user.name, key: KeyIdentifier.name)
-            UserDefaultsManager.shared.setData(value: user.surname, key: KeyIdentifier.surname)
-            UserDefaultsManager.shared.setData(value: user.email, key: KeyIdentifier.email)
-            UserDefaultsManager.shared.setData(value: user.username, key: KeyIdentifier.username)
-            UserDefaultsManager.shared.setData(value: user.password, key: KeyIdentifier.password)
-            AlertViewGenerate(viewController: self,
-                              title: AlertIdentifier.great,
-                              message: AlertIdentifier.success).generate()
+        let user = UserBuilder()
+            .setName(name)
+            .setSurname(surname)
+            .setEmail(email)
+            .setUserName(username)
+            .setPassword(password)
+            .build()
+        
+        do {
+            // Create JSON Encoder
+            let encoder = JSONEncoder()
+
+            // Encode Note
+            let data = try encoder.encode(user)
+
+            // Write/Set Data
+            UserDefaults.standard.set(data, forKey: "user")
+            
+            // Success Alert
+            AlertViewGenerate.shared
+                .setViewController(self)
+                .setTitle(AlertIdentifier.great)
+                .setMessage(AlertIdentifier.success)
+                .generate()
+        } catch {
+            print("Unable to Encode User (\(error))")
         }
     }
-    
 }
 
