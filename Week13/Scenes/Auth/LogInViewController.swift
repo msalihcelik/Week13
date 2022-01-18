@@ -33,7 +33,7 @@ class LogInViewController: UIViewController {
     
     private let emailTextField = UITextFieldBuilder()
         .borderWidth(1)
-        .placeholder("E-mail")
+        .placeholder("Email")
         .build()
     
     private let passwordTextField = UITextFieldBuilder()
