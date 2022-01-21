@@ -140,24 +140,13 @@ extension RegisterViewController {
             .setPassword(password)
             .build()
         
-        do {
-            // Create JSON Encoder
-            let encoder = JSONEncoder()
-
-            // Encode Note
-            let data = try encoder.encode(user)
-
-            // Write/Set Data
-            UserDefaults.standard.set(data, forKey: "user")
-            
+        if UserDefaultsManager.shared.setData(object: user, key: "user") {
             // Success Alert
             AlertViewGenerate.shared
                 .setViewController(self)
                 .setTitle(AlertIdentifier.great)
                 .setMessage(AlertIdentifier.success)
                 .generate()
-        } catch {
-            print("Unable to Encode User (\(error))")
         }
     }
 }

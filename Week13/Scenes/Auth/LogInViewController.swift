@@ -101,31 +101,20 @@ extension LogInViewController {
     @objc
     func logInButtonTapped() {
         // Read/Get Data
-        guard let data = UserDefaults.standard.data(forKey: "user") else { return }
-        
-        do {
-            // Create JSON Decoder
-            let decoder = JSONDecoder()
-            
-            // Decode Note
-            let data = try decoder.decode(User.self, from: data)
-            
-            guard usernameTextField.text == data.username,
-                  emailTextField.text == data.email,
-                  passwordTextField.text == data.password
-            else {
-                return AlertViewGenerate.shared
-                    .setViewController(self)
-                    .setTitle(AlertIdentifier.error)
-                    .setMessage(AlertIdentifier.wrongData)
-                    .generate()
-            }
-            // Segue
-            let homePage = HomePageViewController()
-            homePage.modalPresentationStyle = .fullScreen
-            present(homePage, animated: true, completion: nil)
-        } catch {
-            print("Unable to Decode Notes (\(error))")
+        guard let data = UserDefaultsManager.shared.getData(objectType: User.self, key: "user") else { return }
+        guard usernameTextField.text == data.username,
+              emailTextField.text == data.email,
+              passwordTextField.text == data.password
+        else {
+            return AlertViewGenerate.shared
+                .setViewController(self)
+                .setTitle(AlertIdentifier.error)
+                .setMessage(AlertIdentifier.wrongData)
+                .generate()
         }
+        // Segue
+        let homePage = HomePageViewController()
+        homePage.modalPresentationStyle = .fullScreen
+        present(homePage, animated: true, completion: nil)
     }
 }

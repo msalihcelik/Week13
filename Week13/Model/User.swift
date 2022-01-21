@@ -9,11 +9,11 @@ import Foundation
 
 struct User: Codable {
     
-    let name: String
-    let surname: String
-    let email: String
-    let password: String
-    let username: String
+    var name: String
+    var surname: String
+    var email: String
+    var password: String
+    var username: String
     
     init(name: String, surname: String, email: String, password: String, username: String) {
         self.name = name

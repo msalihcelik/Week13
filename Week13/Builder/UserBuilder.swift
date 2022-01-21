@@ -9,42 +9,34 @@ import Foundation
 
 class UserBuilder {
     
-    private var name = ""
-    private var surname = ""
-    private var email = ""
-    private var password = ""
-    private var username = ""
+    private var user = User(name: "", surname: "", email: "", password: "", username: "")
     
     func setName(_ name: String) -> UserBuilder {
-        self.name = name
+        user.name = name
         return self
     }
     
     func setSurname(_ surname: String) -> UserBuilder {
-        self.surname = surname
+        user.surname = surname
         return self
     }
     
     func setEmail(_ email: String) -> UserBuilder {
-        self.email = email
+        user.email = email
         return self
     }
     
     func setPassword(_ password: String) -> UserBuilder {
-        self.password = password
+        user.password = password
         return self
     }
     
     func setUserName(_ username: String) -> UserBuilder {
-        self.username = username
+        user.username = username
         return self
     }
     
     func build() -> User {
-        return User(name: self.name,
-                    surname: self.surname,
-                    email: self.email,
-                    password: self.password,
-                    username: self.username)
+        return user
     }
 }
