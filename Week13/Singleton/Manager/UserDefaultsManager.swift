@@ -11,7 +11,7 @@ class UserDefaultsManager: Codable {
     
     static let shared = UserDefaultsManager()
     
-    func setData(object: User, key: String) -> Bool {
+    func setData<T: Codable>(object: T, key: String) -> Bool {
         do {
             // Create JSON Encoder
             let encoder = JSONEncoder()
